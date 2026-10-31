@@ -1,0 +1,7 @@
+flowchart LR
+    C[Java client] -->|gRPC / HTTP2 Protobuf :9090| G[gRPC endpoint]
+    C -->|REST / HTTP1.1 JSON :8080| R[REST endpoint]
+    G --> S[Shared TaskStore service]
+    R --> S
+    S --> M[(Concurrent in-memory maps)]
+    M -.-> P[(Production: PostgreSQL + Redis)]

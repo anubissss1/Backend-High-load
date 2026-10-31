@@ -1,0 +1,13 @@
+sequenceDiagram
+    participant Client
+    participant GRPC as gRPC server
+    participant Store as TaskStore
+    Client->>GRPC: CreateTask + user + stable Idempotency-Key (250ms deadline)
+    GRPC->>Store: create(user, payload, key)
+    Store-->>GRPC: task T1
+    GRPC--xClient: reply lost / deadline expires
+    Note over Client: retry only UNAVAILABLE or DEADLINE_EXCEEDED; backoff + jitter, max 3 attempts
+    Client->>GRPC: CreateTask + SAME key and payload
+    GRPC->>Store: lookup key, verify fingerprint
+    Store-->>GRPC: existing T1
+    GRPC-->>Client: T1 (no duplicate)

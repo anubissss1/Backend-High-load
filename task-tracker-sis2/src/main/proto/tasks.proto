@@ -1,0 +1,46 @@
+syntax = "proto3";
+package tasktracker.v1;
+option java_package = "com.example.tasktracker.proto";
+option java_multiple_files = true;
+
+service TaskService {
+  rpc CreateTask(CreateTaskRequest) returns (TaskReply);
+  rpc GetTask(GetTaskRequest) returns (TaskReply);
+  rpc ListTasks(ListTasksRequest) returns (ListTasksReply);
+  rpc UpdateTask(UpdateTaskRequest) returns (TaskReply);
+  rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskReply);
+}
+message Task {
+  string id = 1;
+  string user_id = 2;
+  string title = 3;
+  string description = 4;
+  string status = 5;
+  int32 priority = 6;
+  string due_at = 7; // ISO-8601 or empty
+  string created_at = 8;
+  string updated_at = 9;
+  int64 version = 10;
+}
+message CreateTaskRequest {
+  string title = 1;
+  string description = 2;
+  string status = 3;
+  int32 priority = 4;
+  string due_at = 5;
+}
+message GetTaskRequest { string id = 1; }
+message ListTasksRequest { string status = 1; string due_before = 2; int32 limit = 3; string cursor = 4; }
+message ListTasksReply { repeated Task items = 1; string next_cursor = 2; }
+message UpdateTaskRequest {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string status = 4;
+  int32 priority = 5;
+  string due_at = 6;
+  int64 expected_version = 7;
+}
+message DeleteTaskRequest { string id = 1; }
+message DeleteTaskReply { bool deleted = 1; }
+message TaskReply { Task task = 1; }
